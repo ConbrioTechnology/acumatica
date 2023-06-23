@@ -47,13 +47,34 @@ module Acumatica
       def deep_transform_values!(object)
         case object
         when Array
-          object.map! { |e| deep_transform_values!(e) }
+          object.map! { |e| deep_transform_values_array!(e) }
         when Hash
           object.each do |key, value|
             object[key] = deep_transform_values!(value)
           end
         else
           { "value" => object }
+        end
+      end
+
+      # Method needed for Acumatica arrays, where deletion of ID's required
+      # format of [{ID: value, Delete: true}, {CategoryID: {value: newvalue}}]
+      def deep_transform_values_array!(object)
+        case object
+        when Array
+          object.map! { |e| deep_transform_values_array!(e) }
+        when Hash
+          object.each do |key, value|
+            object[key] = deep_transform_values_array!(value)
+          end
+        else
+          if object == true
+            object
+          elsif object.length == 36
+            object
+          else
+            { "value" => object }
+          end
         end
       end
 
