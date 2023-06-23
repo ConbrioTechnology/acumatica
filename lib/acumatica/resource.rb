@@ -17,6 +17,18 @@ module Acumatica
         new(response.body)
       end
 
+      def update(body = {}, params = {})
+        response = Acumatica::Client.instance.connection.put do |req|
+          req.url url
+          # removing format request body as deep_transform_keys does not work with arrays
+          # will send body requests as pre-formatted JSON not hashes
+          req.body = body if body
+          req.params = parse_query_params(params) if params
+        end
+
+        new(response.body)
+      end
+
       def find_all(params = {})
         response = Acumatica::Client.instance.connection.get do |req|
           req.url url
