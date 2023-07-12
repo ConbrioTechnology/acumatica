@@ -70,7 +70,7 @@ module Acumatica
         else
           if object == true
             object
-          elsif object.length == 36
+          elsif object&.length == 36
             object
           else
             { "value" => object }
